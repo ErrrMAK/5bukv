@@ -45,4 +45,3 @@ def frequency_word(word):
             frequency += frequensy_by_letter(letter)
         tmp_word += letter
     return frequency
-

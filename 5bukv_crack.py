@@ -1,8 +1,8 @@
 from import_words import wordlist
 
-
+word_list = wordlist()
 print("Добро пожаловать в подбор слов для игры 5 букв! \nДля начала вот 10 слов с самыми распространенными буквами \n")
-print(wordlist()[:10])
+print(word_list[:10])
 history = [[], []]
 while True:
     # Вводим слово и цвета
@@ -17,7 +17,7 @@ while True:
     while len(color_of_word) != 5:
         print('Слово некорректно')
         color_of_word = input('Введите полученные цвета без пробелов (Б,С,Ж) \n').lower()
-
+        print(1)
 
     history[0].append(word)
     history[1].append(color_of_word)
@@ -30,8 +30,8 @@ while True:
             if history[1][i][h] == 'ж':
                 exceptions_for_yellow[0].append(history[0][i][h])
                 exceptions_for_yellow[1].append(h)
-    for i in range(len(wordlist())):
-        word_from_wordlist = wordlist()[i]
+    for i in range(len(word_list)):
+        word_from_wordlist = word_list[i]
         yellow_letters = exceptions_for_yellow[0]
         wordlist_letters = []
         for j in exceptions_for_yellow[1]:
@@ -61,7 +61,7 @@ while True:
         for h in range(len(history[1][i])):
             if history[1][i][h] == 'б':
                 exceptions_for_white[0].append(history[0][i][h])
-                exceptions_for_white[1].append(history[1][i][h])
+                exceptions_for_white[1].append(h)
 
     for i in range(len(clear_wordlist)):
         tmp_clear_wordlist = list(clear_wordlist[i]), [_ for _ in range(len(clear_wordlist[i]))]
@@ -85,3 +85,35 @@ while True:
     if input('продолжим? да/нет \n').lower() == 'нет':
         break
 print('До новых встреч!')
+
+# Баги
+# Где-то не срабатывает белая
+# слово полюс не нашло
+
+# Добро пожаловать в подбор слов для игры 5 букв!
+# Для начала вот 10 слов с самыми распространенными буквами
+#
+# ['осина', 'олеат', 'олеин', 'тесно', 'сонет', 'океан', 'тенор', 'ленто', 'нотис', 'иомен']
+# Введите слово
+# осина
+# Введите полученные цвета без пробелов (Б,С,Ж)
+# ббссс
+# ['осетр', 'совет', 'отсев', 'отвес', 'тесло', 'отсек', 'место', 'тодес', 'весло', 'серко']
+# осталось подходящих вариантов: 167
+# продолжим? да/нет
+# совет
+# Введите слово
+# совет
+# Введите полученные цвета без пробелов (Б,С,Ж)
+# бжссс
+# ['порск', 'посул', 'сопля', 'посыл', 'модус', 'космы', 'сорок', 'сором', 'колос', 'сокол']
+# осталось подходящих вариантов: 40
+# продолжим? да/нет
+# колос
+# Введите слово
+# колос
+# Введите полученные цвета без пробелов (Б,С,Ж)
+# сжжсж
+# []
+# осталось подходящих вариантов: 0
+# продолжим? да/нет
