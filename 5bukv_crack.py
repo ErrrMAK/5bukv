@@ -1,119 +1,133 @@
 from import_words import wordlist
 
 word_list = wordlist()
+
+input_words = [[], []]
+
+
+# исключаем из списка слова не совпадающие с желтыми буквами
+def create_yellow_letterlist(input_words):
+    exceptions_for_yellow = [[], []]
+    wordlist = input_words[0]
+    colorlist = input_words[1]
+    for position_of_word in range(len(colorlist)):
+        for position_of_letter in range(len(colorlist[position_of_word])):
+            if colorlist[position_of_word][position_of_letter] == 'ж':
+                exceptions_for_yellow[0].append(wordlist[position_of_word][position_of_letter])
+                exceptions_for_yellow[1].append(position_of_letter)
+    return exceptions_for_yellow
+
+
+def forming_yellow_wordlist(input_words):
+    clear_wordlist = []
+    yellow_letters = create_yellow_letterlist(input_words)[0]
+    yellow_positions = create_yellow_letterlist(input_words)[1]
+    for word in word_list:
+        letters_list = []
+        for position_yellow_letter in yellow_positions:
+            letters_list.append(word[position_yellow_letter])
+            if letters_list == yellow_letters:
+                clear_wordlist.append(word)
+    if clear_wordlist == []:
+        clear_wordlist = word_list
+    return clear_wordlist
+
+
+# исключаем слова с серыми буквами
+def gray_letter_list(input_words):
+    gray_letter_list = []
+    wordlist = input_words[0]
+    colorlist = input_words[1]
+    for position_of_word in range(len(colorlist)):
+        color_word = colorlist[position_of_word]
+        for position_of_letter in range(len(color_word)):
+            color_letter = color_word[position_of_letter]
+            if color_letter == 'с':
+                gray_letter_list.append(wordlist[position_of_word][position_of_letter])
+    return gray_letter_list
+
+
+def prepare_gray_wordlist(clear_wordlist, input_words):
+    for position_of_word in range(len(clear_wordlist)):
+        word = clear_wordlist[position_of_word]
+        for gray_letter in gray_letter_list(input_words):
+            if gray_letter in word:
+                clear_wordlist[position_of_word] = '_'
+    return clear_wordlist
+
+
+def cleaning_wordlist(clear_wordlist):
+    for _ in range(clear_wordlist.count('_')):
+        clear_wordlist.remove('_')
+    return clear_wordlist
+
+
+def white_letter_list(input_words):
+    exceptions_for_white = [[], []]
+    for position_of_word in range(len(input_words[1])):
+        color_word = input_words[1][position_of_word]
+        for position_of_letter in range(len(color_word)):
+            color_letter = color_word[position_of_letter]
+            if color_letter == 'б':
+                exceptions_for_white[0].append(input_words[0][position_of_word][position_of_letter])
+                exceptions_for_white[1].append(position_of_letter)
+    return exceptions_for_white
+
+
+def prepare_white_wordlist(clear_wordlist, exceptions_for_white):
+    for word_index in range(len(clear_wordlist)):
+        word = clear_wordlist[word_index]
+        letters_wordlist = word, list(range(len(word)))
+        word_for_delete = letter_comparison(letters_wordlist, word, exceptions_for_white)
+        clear_wordlist[word_index] = word_for_delete
+    cleaning_wordlist(clear_wordlist)
+    return clear_wordlist
+
+def letter_comparison(letters_wordlist, word, exceptions_for_white):
+    for letter_index in range(len(word)):
+        tmp_count_white_word = 0
+        letter = letters_wordlist[0][letter_index]
+        index_letter = letters_wordlist[1][letter_index]
+        for exeption_letter_index in range(len(exceptions_for_white[0])):
+            exeption_letter = exceptions_for_white[0][exeption_letter_index]
+            exeption_index_letter = exceptions_for_white[1][exeption_letter_index]
+            if exeption_letter == letter and exeption_index_letter == index_letter:
+                word = '_'
+            if exeption_letter in letters_wordlist[0]:
+                tmp_count_white_word += 1
+    if tmp_count_white_word < len(exceptions_for_white[0]):
+        word = '_'
+    print(word)
+    return word
+
+
 print("Добро пожаловать в подбор слов для игры 5 букв! \nДля начала вот 10 слов с самыми распространенными буквами \n")
 print(word_list[:10])
-history = [[], []]
+
 while True:
     # Вводим слово и цвета
     word = input('Введите слово \n').lower()
-
     while len(word) != 5:
         print('Слово некорректно')
         word = input('Введите слово \n').lower()
 
     color_of_word = input('Введите полученные цвета без пробелов (Б,С,Ж) \n').lower()
-
     while len(color_of_word) != 5:
         print('Слово некорректно')
         color_of_word = input('Введите полученные цвета без пробелов (Б,С,Ж) \n').lower()
-        print(1)
 
-    history[0].append(word)
-    history[1].append(color_of_word)
 
-    # исключаем из списка слова не совпадающие с желтыми буквами
-    exceptions_for_yellow = [[], []]
-    clear_wordlist = []
-    for i in range(len(history[1])):
-        for h in range(len(history[1][i])):
-            if history[1][i][h] == 'ж':
-                exceptions_for_yellow[0].append(history[0][i][h])
-                exceptions_for_yellow[1].append(h)
-    for i in range(len(word_list)):
-        word_from_wordlist = word_list[i]
-        yellow_letters = exceptions_for_yellow[0]
-        wordlist_letters = []
-        for j in exceptions_for_yellow[1]:
-            wordlist_letters.append(word_from_wordlist[j])
-        if wordlist_letters == yellow_letters:
-            clear_wordlist.append(word_from_wordlist)
+    input_words[0].append(word)
+    input_words[1].append(color_of_word)
 
-    # создаем список серых букв для исключения
-    gray_letter_list = []
-    for i in range(len(history[1])):
-        for h in range(len(history[1][i])):
-            if history[1][i][h] == 'с':
-                gray_letter_list.append(history[0][i][h])
+    clear_wordlist = forming_yellow_wordlist(input_words)
+    clear_wordlist = cleaning_wordlist(prepare_gray_wordlist(clear_wordlist, input_words))
+    clear_wordlist = cleaning_wordlist(prepare_white_wordlist(clear_wordlist, white_letter_list(input_words)))
 
-    # исключаем слова содержащие серые буквы
-    for i in range(len(clear_wordlist)):
-        for j in range(len(gray_letter_list)):
-            if gray_letter_list[j] in clear_wordlist[i]:
-                clear_wordlist[i] = '_'
-    for i in range(clear_wordlist.count('_')):
-        clear_wordlist.remove('_')
 
-    # фильтруем слова с учетом белых букв
-    exceptions_for_white = [[], []]
-
-    for i in range(len(history[1])):
-        for h in range(len(history[1][i])):
-            if history[1][i][h] == 'б':
-                exceptions_for_white[0].append(history[0][i][h])
-                exceptions_for_white[1].append(h)
-
-    for i in range(len(clear_wordlist)):
-        tmp_clear_wordlist = list(clear_wordlist[i]), [_ for _ in range(len(clear_wordlist[i]))]
-        tmp_count_white_word = 0
-        for j in range(len(clear_wordlist[i])):
-            for g in range(len(exceptions_for_white[0])):
-                if tmp_clear_wordlist[0][j] == exceptions_for_white[0][g] \
-                        and tmp_clear_wordlist[1][j] == exceptions_for_white[1][g]:
-                    clear_wordlist[i] = '_'
-                if exceptions_for_white[0][g] in clear_wordlist[i]:
-                    tmp_count_white_word += 1
-            if tmp_count_white_word < len(exceptions_for_white[0]):
-                clear_wordlist[i] = '_'
-
-    for i in range(clear_wordlist.count('_')):
-        clear_wordlist.remove('_')
-
-    print(clear_wordlist[0:10])
+    print(clear_wordlist[:10])
     print('осталось подходящих вариантов:', len(clear_wordlist))
 
     if input('продолжим? да/нет \n').lower() == 'нет':
         break
 print('До новых встреч!')
-
-# Баги
-# Где-то не срабатывает белая
-# слово полюс не нашло
-
-# Добро пожаловать в подбор слов для игры 5 букв!
-# Для начала вот 10 слов с самыми распространенными буквами
-#
-# ['осина', 'олеат', 'олеин', 'тесно', 'сонет', 'океан', 'тенор', 'ленто', 'нотис', 'иомен']
-# Введите слово
-# осина
-# Введите полученные цвета без пробелов (Б,С,Ж)
-# ббссс
-# ['осетр', 'совет', 'отсев', 'отвес', 'тесло', 'отсек', 'место', 'тодес', 'весло', 'серко']
-# осталось подходящих вариантов: 167
-# продолжим? да/нет
-# совет
-# Введите слово
-# совет
-# Введите полученные цвета без пробелов (Б,С,Ж)
-# бжссс
-# ['порск', 'посул', 'сопля', 'посыл', 'модус', 'космы', 'сорок', 'сором', 'колос', 'сокол']
-# осталось подходящих вариантов: 40
-# продолжим? да/нет
-# колос
-# Введите слово
-# колос
-# Введите полученные цвета без пробелов (Б,С,Ж)
-# сжжсж
-# []
-# осталось подходящих вариантов: 0
-# продолжим? да/нет
