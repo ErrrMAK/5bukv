@@ -5,15 +5,16 @@ word_list = wordlist()
 input_words = [[], []]
 
 
-# исключаем из списка слова не совпадающие с желтыми буквами
 def create_yellow_letterlist(input_words):
+    """исключаем из списка слова не совпадающие с желтыми буквами"""
     exceptions_for_yellow = [[], []]
     wordlist = input_words[0]
     colorlist = input_words[1]
     for position_of_word in range(len(colorlist)):
         for position_of_letter in range(len(colorlist[position_of_word])):
             if colorlist[position_of_word][position_of_letter] == 'ж':
-                exceptions_for_yellow[0].append(wordlist[position_of_word][position_of_letter])
+                exceptions_for_yellow[0].append(wordlist[position_of_word]
+                                                [position_of_letter])
                 exceptions_for_yellow[1].append(position_of_letter)
     return exceptions_for_yellow
 
@@ -43,7 +44,8 @@ def gray_letter_list(input_words):
         for position_of_letter in range(len(color_word)):
             color_letter = color_word[position_of_letter]
             if color_letter == 'с':
-                gray_letter_list.append(wordlist[position_of_word][position_of_letter])
+                gray_letter_list.append(wordlist[position_of_word]
+                                        [position_of_letter])
     return gray_letter_list
 
 
@@ -69,7 +71,8 @@ def white_letter_list(input_words):
         for position_of_letter in range(len(color_word)):
             color_letter = color_word[position_of_letter]
             if color_letter == 'б':
-                exceptions_for_white[0].append(input_words[0][position_of_word][position_of_letter])
+                exceptions_for_white[0].append(input_words[0][position_of_word]
+                                               [position_of_letter])
                 exceptions_for_white[1].append(position_of_letter)
     return exceptions_for_white
 
@@ -78,10 +81,12 @@ def prepare_white_wordlist(clear_wordlist, exceptions_for_white):
     for word_index in range(len(clear_wordlist)):
         word = clear_wordlist[word_index]
         letters_wordlist = word, list(range(len(word)))
-        word_for_delete = letter_comparison(letters_wordlist, word, exceptions_for_white)
+        word_for_delete = letter_comparison\
+            (letters_wordlist, word, exceptions_for_white)
         clear_wordlist[word_index] = word_for_delete
     cleaning_wordlist(clear_wordlist)
     return clear_wordlist
+
 
 def letter_comparison(letters_wordlist, word, exceptions_for_white):
     for letter_index in range(len(word)):
@@ -101,7 +106,17 @@ def letter_comparison(letters_wordlist, word, exceptions_for_white):
     return word
 
 
-print("Добро пожаловать в подбор слов для игры 5 букв! \nДля начала вот 10 слов с самыми распространенными буквами \n")
+def get_wordlist(input_words):
+    yellow_wordlist = forming_yellow_wordlist(input_words)
+    gray_wordlist = cleaning_wordlist(
+        prepare_gray_wordlist(yellow_wordlist, input_words))
+    wordlist = cleaning_wordlist(
+        prepare_white_wordlist(gray_wordlist, white_letter_list(input_words)))
+    return wordlist
+
+
+print("Добро пожаловать в подбор слов для игры 5 букв! "
+      "\nДля начала вот 10 слов с самыми распространенными буквами \n")
 print(word_list[:10])
 
 while True:
@@ -111,22 +126,20 @@ while True:
         print('Слово некорректно')
         word = input('Введите слово \n').lower()
 
-    color_of_word = input('Введите полученные цвета без пробелов (Б,С,Ж) \n').lower()
+    color_of_word = \
+        input('Введите полученные цвета без пробелов (Б,С,Ж) \n').lower()
     while len(color_of_word) != 5:
         print('Слово некорректно')
-        color_of_word = input('Введите полученные цвета без пробелов (Б,С,Ж) \n').lower()
-
+        color_of_word = \
+            input('Введите полученные цвета без пробелов (Б,С,Ж) \n').lower()
 
     input_words[0].append(word)
     input_words[1].append(color_of_word)
 
-    clear_wordlist = forming_yellow_wordlist(input_words)
-    clear_wordlist = cleaning_wordlist(prepare_gray_wordlist(clear_wordlist, input_words))
-    clear_wordlist = cleaning_wordlist(prepare_white_wordlist(clear_wordlist, white_letter_list(input_words)))
+    wordlist = get_wordlist(input_words)
 
-
-    print(clear_wordlist[:10])
-    print('осталось подходящих вариантов:', len(clear_wordlist))
+    print(wordlist[:10])
+    print('осталось подходящих вариантов:', len(wordlist))
 
     if input('продолжим? да/нет \n').lower() == 'нет':
         break
