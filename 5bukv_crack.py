@@ -102,7 +102,6 @@ def letter_comparison(letters_wordlist, word, exceptions_for_white):
                 tmp_count_white_word += 1
     if tmp_count_white_word < len(exceptions_for_white[0]):
         word = '_'
-    print(word)
     return word
 
 
